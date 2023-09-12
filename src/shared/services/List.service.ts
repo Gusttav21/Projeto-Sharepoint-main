@@ -1,5 +1,6 @@
 import { sp } from "@pnp/pnpjs";
 import { IGeneralProps } from "../interfaces/IGeneralProps";
+import { IReceitas } from "../../webparts/projeto/interfaces/IReceitas";
 
 export default class ListSP {
 
@@ -16,6 +17,16 @@ export default class ListSP {
 
 
 
+    }
+
+    public async PostList(idList:string,fields:IReceitas):Promise<IGeneralProps>{
+        const insert:IGeneralProps = await sp.web.lists
+        .getById(idList).items
+        .add(fields)
+        .then((data:IGeneralProps)=>{return data;})
+        .catch((err:IGeneralProps)=>{return err;})
+
+        return insert;
     }
 
 }

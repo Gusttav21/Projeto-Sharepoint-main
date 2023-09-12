@@ -1,5 +1,5 @@
 export interface IReceitas {
-    ID: number;
+    ID?: number;
     Title: string;
     TipoReceita?: string;
     Cara?: boolean;

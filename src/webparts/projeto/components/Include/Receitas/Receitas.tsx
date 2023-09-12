@@ -1,7 +1,11 @@
 import * as React from "react";
 import { IReceitaProps } from "./IReceitasProps";
-import { Combobox, ComboboxProps,Option, Field, Input, InputProps, makeResetStyles, tokens, Switch, makeStyles, typographyStyles } from "@fluentui/react-components";
+import { Combobox, ComboboxProps,Option, Field, Input, InputProps, makeResetStyles, tokens, Switch, makeStyles, typographyStyles, Button } from "@fluentui/react-components";
 import { DatePicker } from "@fluentui/react-datepicker-compat";
+import { Save24Regular } from "@fluentui/react-icons";
+import { stringIsNullOrEmpty } from "@pnp/pnpjs";
+import { IReceitas } from "../../../interfaces/IReceitas";
+import ListSP from "../../../../../shared/services/List.service";
 
 
 const useStackClassName = makeResetStyles({
@@ -22,6 +26,7 @@ const useStyles = makeStyles({
 
 const IncludeReceitas: React.FunctionComponent<IReceitaProps> = (props) =>{
 
+    const spList=new ListSP();
     const styles = useStyles();
     const [nomeReceita, setNomeReceita] = React.useState('teste');
     const onChangeNomeReceita: InputProps["onChange"] = (ev, data) => {
@@ -42,6 +47,34 @@ const IncludeReceitas: React.FunctionComponent<IReceitaProps> = (props) =>{
       );
 
     const [dataReceita,setDataReceita] = React.useState<Date>(new Date())
+
+    async function salvarReceita():Promise<void> 
+    {
+        if(verificaCamposObrigatorios()){
+            const receita:IReceitas = {
+                
+                Title:nomeReceita,
+                TipoReceita: selectedTipoReceita[0]?selectedTipoReceita[0]:"",
+                Cara:receitaCara,
+                DataTentativa:dataReceita
+
+            };
+            await spList.PostList(props.receitaIdList,receita).then((result)=>{
+                console.log('sucesso',result);
+            }).catch((error)=>{
+                console.log('erro',error)
+            })
+
+        }
+    }
+
+    function verificaCamposObrigatorios():boolean{
+        if(stringIsNullOrEmpty(nomeReceita)){
+            alert("Campo Receita");
+            return false;
+        }
+        return true
+    }
     return(
         <React.Fragment>
         <div className={useStackClassName()}>
@@ -76,6 +109,14 @@ const IncludeReceitas: React.FunctionComponent<IReceitaProps> = (props) =>{
                 placeholder="Select a date..."
                 />
             </Field>
+        </div>
+        <div className={useStackClassName()}>
+            <Field label="Imagem da Receita">
+                <input type="file" id="inputFile"/>
+            </Field>
+        </div>
+        <div className={useStackClassName()}>
+            <Button icon={<Save24Regular />} onClick={salvarReceita}>Salvar Registro</Button>
         </div>
         </React.Fragment>
     )
