@@ -28,5 +28,15 @@ export default class ListSP {
 
         return insert;
     }
+    public async PostAttachmentList(idList:string,idItem:number,fileProps:any):Promise<IGeneralProps>{
+
+        const item:IGeneralProps = await sp.web.lists.getById(idList).items.getById(idItem);
+        const insert:IGeneralProps = await item.attachmentFiles.add(fileProps.name,fileProps.content)
+        .then((data:IGeneralProps)=>{return data;})
+        .catch((err:IGeneralProps)=>{return err;})
+
+        return insert;
+
+    }
 
 }

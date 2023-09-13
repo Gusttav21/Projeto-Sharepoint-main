@@ -19,7 +19,7 @@ const ViewReceitas: React.FunctionComponent<IViewReceitasProps> = (props) => {
 
     const spList = new ListSP();
     const [receitas, setReceitas] = React.useState<IReceitas[]>([])
-
+ 
     React.useEffect(() =>{
         getReceitas().then(result =>{
             setReceitas(result)

@@ -48,23 +48,56 @@ const IncludeReceitas: React.FunctionComponent<IReceitaProps> = (props) =>{
 
     const [dataReceita,setDataReceita] = React.useState<Date>(new Date())
 
-    async function salvarReceita():Promise<void> 
-    {
+    const [fileReceita, setFileReceita] = React.useState<{name:any; content:string | ArrayBuffer | null;}>();
+    function addFile(event:any){
+        let resultFile = event.target.files;
+        for(let i = 0; i < resultFile.length; i++){
+          var file = resultFile[i];
+          var reader = new FileReader();
+          reader.onload = (function(file) {
+              return function(e) {  
+                  setFileReceita({
+                    name: file.name,
+                    content: e.target!.result
+  
+                })
+              }
+          })(file)
+          reader.readAsArrayBuffer(file)
+        }
+    }
+
+
+    async function salvarReceita():Promise<void> {
+
         if(verificaCamposObrigatorios()){
+
             const receita:IReceitas = {
-                
-                Title:nomeReceita,
-                TipoReceita: selectedTipoReceita[0]?selectedTipoReceita[0]:"",
-                Cara:receitaCara,
-                DataTentativa:dataReceita
+
+                Title: nomeReceita,
+
+                TipoReceita: selectedTipoReceita[0] ? selectedTipoReceita[0] : "",
+
+                Cara: receitaCara,
+
+                DataTentativa: dataReceita
 
             };
-            await spList.PostList(props.receitaIdList,receita).then((result)=>{
-                console.log('sucesso',result);
-            }).catch((error)=>{
-                console.log('erro',error)
+            await spList.PostList(props.receitaIdList, receita)
+            .then((result) => {
+                if(fileReceita && fileReceita.name){
+                    spList.PostAttachmentList(props.receitaIdList, result.data.ID, fileReceita)
+                    .then((result) => {
+                        console.log('sucesso: ',result);
+                    })
+                    .catch((error) => {
+                        console.log('error: ',error);
+                    })
+                }
             })
-
+            .catch((error) => {
+                console.log('erro: ',error);
+            })
         }
     }
 
@@ -111,13 +144,13 @@ const IncludeReceitas: React.FunctionComponent<IReceitaProps> = (props) =>{
             </Field>
         </div>
         <div className={useStackClassName()}>
-            <Field label="Imagem da Receita">
-                <input type="file" id="inputFile"/>
-            </Field>
-        </div>
-        <div className={useStackClassName()}>
-            <Button icon={<Save24Regular />} onClick={salvarReceita}>Salvar Registro</Button>
-        </div>
+                <Field label="Imagem da Receita">
+                    <input type="file" id="inputFile" onChange={addFile.bind(this)} />
+                </Field>
+            </div>
+            <div className={useStackClassName()}>
+                <Button icon={<Save24Regular />} onClick={salvarReceita}>Salvar Registro</Button>
+            </div>
         </React.Fragment>
     )
 }
