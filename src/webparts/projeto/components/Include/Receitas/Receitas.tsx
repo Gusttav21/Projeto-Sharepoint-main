@@ -6,6 +6,7 @@ import { Save24Regular } from "@fluentui/react-icons";
 import { stringIsNullOrEmpty } from "@pnp/pnpjs";
 import { IReceitas } from "../../../interfaces/IReceitas";
 import ListSP from "../../../../../shared/services/List.service";
+import AlertDialog from "../../../../../shared/components/AlertDialog/AlertDialog";
 
 
 const useStackClassName = makeResetStyles({
@@ -75,11 +76,8 @@ const IncludeReceitas: React.FunctionComponent<IReceitaProps> = (props) =>{
             const receita:IReceitas = {
 
                 Title: nomeReceita,
-
                 TipoReceita: selectedTipoReceita[0] ? selectedTipoReceita[0] : "",
-
                 Cara: receitaCara,
-
                 DataTentativa: dataReceita
 
             };
@@ -89,6 +87,7 @@ const IncludeReceitas: React.FunctionComponent<IReceitaProps> = (props) =>{
                     spList.PostAttachmentList(props.receitaIdList, result.data.ID, fileReceita)
                     .then((result) => {
                         console.log('sucesso: ',result);
+                        setAlertTitle('')
                     })
                     .catch((error) => {
                         console.log('error: ',error);
@@ -108,6 +107,14 @@ const IncludeReceitas: React.FunctionComponent<IReceitaProps> = (props) =>{
         }
         return true
     }
+
+    const [alertTitle, setAlertTitle] = React.useState('');
+    const [alertMessage, setAlertMessage] = React.useState('');
+    const [alertOpen,setAlertOpen] = React.useState(false);
+    function AlertDialogClose(open:boolean){
+        setAlertOpen(open)
+    }
+
     return(
         <React.Fragment>
         <div className={useStackClassName()}>
@@ -151,6 +158,9 @@ const IncludeReceitas: React.FunctionComponent<IReceitaProps> = (props) =>{
             <div className={useStackClassName()}>
                 <Button icon={<Save24Regular />} onClick={salvarReceita}>Salvar Registro</Button>
             </div>
+
+            <AlertDialog title={alertTitle} message={alertMessage} openDialog={alertOpen} 
+            closeDialog={(open:boolean)=>{ AlertDialogClose(open)}}/>
         </React.Fragment>
     )
 }
