@@ -72,6 +72,9 @@ const IncludeReceitas: React.FunctionComponent<IReceitaProps> = (props) =>{
     async function salvarReceita():Promise<void> {
 
         if(verificaCamposObrigatorios()){
+            
+            setLoading(true);
+            setLoadingMessage("Cadastrando receita...");
 
             const receita:IReceitas = {
 
@@ -87,15 +90,26 @@ const IncludeReceitas: React.FunctionComponent<IReceitaProps> = (props) =>{
                     spList.PostAttachmentList(props.receitaIdList, result.data.ID, fileReceita)
                     .then((result) => {
                         console.log('sucesso: ',result);
-                        setAlertTitle('')
+                        setAlertTitle('Cadastro de Receita');
+                        setAlertMessage('Cadastro Realizado com Sucesso!');
+                        setAlertOpen(true);
                     })
                     .catch((error) => {
-                        console.log('error: ',error);
+                        setAlertTitle('Cadastro de Receita');
+                        setAlertMessage('Cadastro Realizado Parcialmente com Sucesso, Não foi possivel salvar o anexo registro');
+                        setAlertOpen(true);
                     })
+                }else{
+                    setAlertTitle('Cadastro de Receita');
+                    setAlertMessage('Cadastro Realizado com Sucesso');
+                    setAlertOpen(true);
                 }
             })
             .catch((error) => {
                 console.log('erro: ',error);
+                setAlertTitle('Cadastro de Receita');
+                setAlertMessage(' Não foi possivel salvar');
+                setAlertOpen(true);
             })
         }
     }
@@ -114,6 +128,9 @@ const IncludeReceitas: React.FunctionComponent<IReceitaProps> = (props) =>{
     function AlertDialogClose(open:boolean){
         setAlertOpen(open)
     }
+
+    const [loading,setLoading] = React.useState(false);
+    const [loadingMessage,setLoadingMessage] = React.useState('');
 
     return(
         <React.Fragment>
