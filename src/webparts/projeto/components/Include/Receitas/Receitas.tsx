@@ -7,6 +7,7 @@ import { stringIsNullOrEmpty } from "@pnp/pnpjs";
 import { IReceitas } from "../../../interfaces/IReceitas";
 import ListSP from "../../../../../shared/services/List.service";
 import AlertDialog from "../../../../../shared/components/AlertDialog/AlertDialog";
+import Loading from "../../../../../shared/components/Loading/Loading";
 
 
 const useStackClassName = makeResetStyles({
@@ -90,22 +91,26 @@ const IncludeReceitas: React.FunctionComponent<IReceitaProps> = (props) =>{
                     spList.PostAttachmentList(props.receitaIdList, result.data.ID, fileReceita)
                     .then((result) => {
                         console.log('sucesso: ',result);
+                        setLoading(false);
                         setAlertTitle('Cadastro de Receita');
                         setAlertMessage('Cadastro Realizado com Sucesso!');
                         setAlertOpen(true);
                     })
                     .catch((error) => {
+                        setLoading(false);
                         setAlertTitle('Cadastro de Receita');
                         setAlertMessage('Cadastro Realizado Parcialmente com Sucesso, Não foi possivel salvar o anexo registro');
                         setAlertOpen(true);
                     })
                 }else{
+                    setLoading(false);
                     setAlertTitle('Cadastro de Receita');
                     setAlertMessage('Cadastro Realizado com Sucesso');
                     setAlertOpen(true);
                 }
             })
             .catch((error) => {
+                setLoading(false);
                 console.log('erro: ',error);
                 setAlertTitle('Cadastro de Receita');
                 setAlertMessage(' Não foi possivel salvar');
@@ -178,6 +183,7 @@ const IncludeReceitas: React.FunctionComponent<IReceitaProps> = (props) =>{
 
             <AlertDialog title={alertTitle} message={alertMessage} openDialog={alertOpen} 
             closeDialog={(open:boolean)=>{ AlertDialogClose(open)}}/>
+            <Loading openLoading={loading} message={loadingMessage}/>
         </React.Fragment>
     )
 }
