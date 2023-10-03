@@ -12,10 +12,12 @@ import * as React from 'react';
     TableColumnDefinition,
     createTableColumn,
     DataGridProps,
+    Button,
   } from "@fluentui/react-components";
 import { IReceitas } from '../../../../../interfaces/IReceitas';
 import { stringIsNullOrEmpty } from '@pnp/pnpjs';
 import { ITableProps } from './ITableProps';
+import { ArrowDownload24Regular } from '@fluentui/react-icons';
 
 const Table:React.FunctionComponent <ITableProps> = (props) => {
 
@@ -84,6 +86,22 @@ const Table:React.FunctionComponent <ITableProps> = (props) => {
               );
             },
           }),
+          createTableColumn<IReceitas>({
+            columnId:"actions",
+            renderHeaderCell:() => {
+              return "Ações"
+            },
+            renderCell:(item) =>{
+              return(
+                <React.Fragment>
+                  {item.Anexo.length > 0 && 
+                    <Button aria-label = "Visualizar" icon={<ArrowDownload24Regular/>}
+                      onClick={()=>{visualizarAttachment(item.Anexo)}}/>
+                }
+                </React.Fragment>
+              )
+            }
+          })
       ];
       function transformaStringParaData(date:string):string{
         if(!stringIsNullOrEmpty(date)){
@@ -110,6 +128,11 @@ const Table:React.FunctionComponent <ITableProps> = (props) => {
     const onSortChange: DataGridProps["onSortChange"] = (e, nextSortState) => {
       setSortState(nextSortState);
     };
+    function visualizarAttachment(item:any){
+      if(item.length>0){
+        window.open(`${window.location.origin}${item[0].ServerRelativeUrl}`)
+      }
+    }
   
     return (
       <DataGrid
@@ -138,6 +161,6 @@ const Table:React.FunctionComponent <ITableProps> = (props) => {
       </DataGrid>
     );
   };
- 
 
+  
 export default Table

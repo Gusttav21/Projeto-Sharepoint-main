@@ -44,7 +44,7 @@ const ViewReceitas: React.FunctionComponent<IViewReceitasProps> = (props) => {
                 TipoReceita: item.TipoReceita ? item.TipoReceita : "",
                 Cara: item.Cara,
                 DataTentativaString: item.DataTentativa,
-                Anexo: item.AttachmentFiles
+                Anexo: item.AttachmentFiles.results
             })
         })
 
