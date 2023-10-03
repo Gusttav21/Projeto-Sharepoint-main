@@ -17,10 +17,12 @@ import * as React from 'react';
 import { IReceitas } from '../../../../../interfaces/IReceitas';
 import { stringIsNullOrEmpty } from '@pnp/pnpjs';
 import { ITableProps } from './ITableProps';
-import { ArrowDownload24Regular } from '@fluentui/react-icons';
+import { ArrowDownload24Regular, Edit24Regular } from '@fluentui/react-icons';
 
 const Table:React.FunctionComponent <ITableProps> = (props) => {
 
+    const [editItem, setEditItem] = React.useState<IReceitas>()
+    const [editOpen, setEditOpen] = React.useState(false)
     const columns: TableColumnDefinition<IReceitas>[] = [
         createTableColumn<IReceitas>({
           columnId: "Title",
@@ -98,6 +100,8 @@ const Table:React.FunctionComponent <ITableProps> = (props) => {
                     <Button aria-label = "Visualizar" icon={<ArrowDownload24Regular/>}
                       onClick={()=>{visualizarAttachment(item.Anexo)}}/>
                 }
+                <Button aria-label = "Editar Receita" icon={<Edit24Regular/>}
+                      onClick={()=>{editarReceita(item)}}/>
                 </React.Fragment>
               )
             }
@@ -133,6 +137,10 @@ const Table:React.FunctionComponent <ITableProps> = (props) => {
         window.open(`${window.location.origin}${item[0].ServerRelativeUrl}`)
       }
     }
+    function editarReceita(item:IReceitas){
+      setEditItem(item)
+      setEditOpen(true)
+    }
   
     return (
       <DataGrid
@@ -141,6 +149,22 @@ const Table:React.FunctionComponent <ITableProps> = (props) => {
             sortable
             sortState={sortState}
             onSortChange={onSortChange}
+            resizableColumns
+            columnSizingOptions={{
+              DataTentativa: {
+                minWidth: 200,
+                defaultWidth: 220
+              },
+              TipoReceita: {
+                minWidth: 200,
+                defaultWidth: 220
+              },
+              Cara: {
+                minWidth: 200,
+                defaultWidth: 220
+              }
+            }}
+                    
       >
         <DataGridHeader>
           <DataGridRow>
@@ -162,5 +186,5 @@ const Table:React.FunctionComponent <ITableProps> = (props) => {
     );
   };
 
-  
+
 export default Table
