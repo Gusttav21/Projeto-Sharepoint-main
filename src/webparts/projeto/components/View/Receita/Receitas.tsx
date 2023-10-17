@@ -52,7 +52,7 @@ const ViewReceitas: React.FunctionComponent<IViewReceitasProps> = (props) => {
     }
     return(
         <div className={useStackClassName()}>
-            <Table item={receitas}/>
+            <Table item={receitas} receitaList={props.receitaIdList}/>
         </div>
     )
 }

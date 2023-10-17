@@ -63,8 +63,18 @@ const EditReceita: React.FunctionComponent<IEditReceitasProps> = (props) => {
           reader.readAsArrayBuffer(file)
         }
     }
+    
+    const [open,setOpen] = React.useState(false);
 
-
+    React.useEffect(()=>{
+        setOpen(props.openDialog);
+        if(props.item && props.openDialog){
+            setNomeReceita(props.item.Title);
+            setSelectedTipoReceita([props.item.TipoReceita!]);
+            setReceitaCara(props.item.Cara!);
+            setDataReceita(new Date(props.item.DataTentativaString!))
+        }
+    },[props.openDialog])
 
     return(
         <Dialog modalType="alert" open={open} onOpenChange={() => close()}>

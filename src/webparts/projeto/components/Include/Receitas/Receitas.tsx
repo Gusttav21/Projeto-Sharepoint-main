@@ -166,6 +166,7 @@ const IncludeReceitas: React.FunctionComponent<IReceitaProps> = (props) =>{
         <div className={useStackClassName()}>
             <Field label="Data de que tentou a receita">
             <DatePicker
+                allowTextInput
                 value={dataReceita}
                 onSelectDate={(data:Date) => {setDataReceita(data)}}
                 placeholder="Select a date..."

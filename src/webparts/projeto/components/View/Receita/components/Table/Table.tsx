@@ -18,6 +18,7 @@ import { IReceitas } from '../../../../../interfaces/IReceitas';
 import { stringIsNullOrEmpty } from '@pnp/pnpjs';
 import { ITableProps } from './ITableProps';
 import { ArrowDownload24Regular, Edit24Regular } from '@fluentui/react-icons';
+import EditReceita from '../../../../Update/EditReceita/EditReceita';
 
 const Table:React.FunctionComponent <ITableProps> = (props) => {
 
@@ -143,6 +144,7 @@ const Table:React.FunctionComponent <ITableProps> = (props) => {
     }
   
     return (
+      <React.Fragment>
       <DataGrid
         items={props.item}
             columns={columns}
@@ -183,6 +185,8 @@ const Table:React.FunctionComponent <ITableProps> = (props) => {
           )}
         </DataGridBody>
       </DataGrid>
+      <EditReceita receitaList={props.receitaList} openDialog={editOpen} item={editItem!} closeDialog={() => {}}/>
+      </React.Fragment>
     );
   };
 
