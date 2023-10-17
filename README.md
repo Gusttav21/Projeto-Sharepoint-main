@@ -1,5 +1,6 @@
 # projeto
 
+
 ## Summary
 
 Short summary on functionality and used technologies.
@@ -47,6 +48,8 @@ Short summary on functionality and used technologies.
 - in the command-line run:
   - **npm install**
   - **gulp serve**
+  - **npm install @types/webpack-env --save-dev**
+
 
 > Include any additional steps as needed.
 
