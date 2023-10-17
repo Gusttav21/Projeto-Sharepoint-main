@@ -45,7 +45,7 @@ const EditReceita: React.FunctionComponent<IEditReceitasProps> = (props) => {
 
     const [dataReceita,setDataReceita] = React.useState<Date>(new Date())
 
-    const [fileReceita, setFileReceita] = React.useState<{name:any; content:string | ArrayBuffer | null;}>();
+    const [, setFileReceita] = React.useState<{name:any; content:string | ArrayBuffer | null;}>();
     function addFile(event:any){
         let resultFile = event.target.files;
         for(let i = 0; i < resultFile.length; i++){
