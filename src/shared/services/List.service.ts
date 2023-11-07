@@ -39,4 +39,21 @@ export default class ListSP {
 
     }
 
+    public async EditList(idList:string, idItem:number, itemEdit:any):Promise<IGeneralProps>{
+        const item:IGeneralProps = sp.web.lists.getById(idList).items.getById(idItem);
+        const update:IGeneralProps = await item.update(itemEdit).then((data:IGeneralProps)=>{return data;})
+        .catch((err:IGeneralProps)=>{return err;});
+
+        return update;
+    }
+
+    public async DeleteAttachmentList(idList:string, idItem:number, attachmentFiles:any){
+
+        const item:IGeneralProps = sp.web.lists.getById(idList).items.getById(idItem);
+        const attachmentNames = attachmentFiles.map((a:any)=>a.FileName);   
+        await item.attachmentFiles.deleteMultiple(...attachmentNames).then((data:IGeneralProps)=>{return data;})
+        .catch((err:IGeneralProps)=>{return err;});
+
+    }
+
 }

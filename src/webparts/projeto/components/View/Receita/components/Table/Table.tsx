@@ -68,7 +68,7 @@ const Table:React.FunctionComponent <ITableProps> = (props) => {
             renderCell: (item) => {
               return (
                 <TableCellLayout>
-                  {transformaBoolparaString(item.Cara!)}
+                  {item.Cara ? "Sim" : "Não"}
                 </TableCellLayout>
               );
             },

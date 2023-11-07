@@ -1,9 +1,10 @@
 import * as React from "react";
 import { IEditReceitasProps } from "./IEditReceitaProps";
-import { Dialog, DialogBody, DialogSurface, DialogTitle, DialogTrigger, Button, DialogContent, Combobox, Field, Switch, Option, Input, typographyStyles, tokens, makeResetStyles, makeStyles, InputProps, ComboboxProps } from "@fluentui/react-components";
-import { Dismiss24Regular } from '@fluentui/react-icons';
+import { Dialog, DialogBody, DialogSurface, DialogTitle, DialogTrigger, Button, DialogContent, Combobox, Field, Switch, Option, Input, typographyStyles, tokens, makeResetStyles, makeStyles, InputProps, ComboboxProps, DialogActions } from "@fluentui/react-components";
+import { Dismiss24Regular, Image24Regular } from '@fluentui/react-icons';
 import { DatePicker } from "@fluentui/react-datepicker-compat";
 import { IReceitas } from "../../../interfaces/IReceitas";
+import ListSP from "../../../../../shared/services/List.service";
 
 
 const useStackClassName = makeResetStyles({
@@ -24,6 +25,7 @@ const useStyles = makeStyles({
 
 const EditReceita: React.FunctionComponent<IEditReceitasProps> = (props) => {
     
+    const spList = new ListSP();
     const styles = useStyles();
 
     const [nomeReceita, setNomeReceita] = React.useState('teste');
@@ -46,7 +48,7 @@ const EditReceita: React.FunctionComponent<IEditReceitasProps> = (props) => {
 
     const [dataReceita,setDataReceita] = React.useState<Date>(new Date())
 
-    const [, setFileReceita] = React.useState<{name:any; content:string | ArrayBuffer | null;}>();
+    const [fileReceita, setFileReceita] = React.useState<{name:any; content:string | ArrayBuffer | null;}>();
     function addFile(event:any){
         let resultFile = event.target.files;
         for(let i = 0; i < resultFile.length; i++){
@@ -63,9 +65,11 @@ const EditReceita: React.FunctionComponent<IEditReceitasProps> = (props) => {
           })(file)
           reader.readAsArrayBuffer(file)
         }
+        console.log(fileReceita)
     }
     
     const [open,setOpen] = React.useState(false);
+    const [trocaAnexo,setTrocaAnexo] = React.useState(false);
 
     React.useEffect(()=>{
         setOpen(props.openDialog);
@@ -88,6 +92,59 @@ const EditReceita: React.FunctionComponent<IEditReceitasProps> = (props) => {
             Anexo:props.item.Anexo
         }
         props.closeDialog(false, receita)
+    }
+
+    function habilitaTrocaDeAnexo(habilitaTroca:boolean){
+        setTrocaAnexo(habilitaTroca)
+        if(habilitaTroca == false){
+            setFileReceita(null!)
+        }
+    }
+
+    async function editarReceita(){
+        if(verificaCampos()){
+            const receita:IReceitas = {
+                Title:nomeReceita,
+                TipoReceita:selectedTipoReceita[0]? selectedTipoReceita[0]:"",
+                Cara:receitaCara,
+                DataTentativa:dataReceita
+            }
+            await spList.EditList(props.receitaList, props.item.ID!, receita).then((result:any)=>{
+                if(fileReceita && fileReceita.name){
+                    if(trocaAnexo){
+                        spList.DeleteAttachmentList(props.receitaList,props.item.ID!,props.item.Anexo).then((result:any)=>{
+                            spList.PostAttachmentList(props.receitaList, props.item.ID!, fileReceita).then((result:any)=>{
+                                if(result.status && result.status !== 200){
+                                    alert('Erro durante a mudança de anexos.')
+                                }else{
+                                    alert('Item atualizado com sucesso.')
+                                }
+                            })
+                        })
+                    }else{
+                        spList.PostAttachmentList(props.receitaList, props.item.ID!, fileReceita).then((result:any)=>{
+                            if(result.status && result.status !== 200){
+                                alert('Erro durante a inserção de anexos.')
+                            }else{
+                                alert('Item atualizado com sucesso.')
+                            }
+                        })
+                    }
+                }else{
+                    alert('Item Atualizado com sucesso')
+                }
+            }).catch((err:any)=>{
+                alert(err)
+            })
+        }
+    }
+
+    function verificaCampos(){
+        if(nomeReceita == "" || nomeReceita == null ){
+            alert('Erro ao editar a receira, o campo "Nome da Receita" está vazio.')
+            return false
+        }
+        return true
     }
     return(
         <Dialog modalType="alert" open={open} onOpenChange={() => close()}>
@@ -137,10 +194,25 @@ const EditReceita: React.FunctionComponent<IEditReceitasProps> = (props) => {
         </div>
         <div className={useStackClassName()}>
                 <Field label="Imagem da Receita">
-                    <input type="file" id="inputFile" onChange={addFile.bind(this)} />
+                    {props.item && props.item.Anexo.length>=1 &&
+                    <Button appearance="secondary" onClick={()=>habilitaTrocaDeAnexo(!trocaAnexo)}>{trocaAnexo && "Cancelar troca de anexo da receita"}{!trocaAnexo && "Troca de anexo da receita"}</Button>}
+                    {props.item && props.item.Anexo.length == 0 &&
+                    <input type="file" id="inputFile" onChange={addFile.bind(this)} />}
+                    {props.item && props.item.Anexo.length> 0 && trocaAnexo &&
+                    <React.Fragment><br/><input type="file" id="inputFile" onChange={addFile.bind(this)}></input></React.Fragment>}
+                    {props.item && props.item.Anexo >= 1 &&
+                    <React.Fragment><br/><label>Anexo já Cadastrado</label></React.Fragment>}
+                    {props.item && props.item.Anexo.map((file:any)=>{
+                        return <p><Image24Regular/>{file.FileName}</p>
+                    })}
                 </Field>
             </div>
                 </DialogContent>
+                <DialogActions>
+                    <DialogTrigger disableButtonEnhancement>
+                        <Button appearance="primary" onClick={editarReceita}>Atualizar</Button>
+                    </DialogTrigger>
+                </DialogActions>
                 </DialogBody>
             </DialogSurface>
 
