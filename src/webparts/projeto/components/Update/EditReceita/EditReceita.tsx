@@ -3,6 +3,7 @@ import { IEditReceitasProps } from "./IEditReceitaProps";
 import { Dialog, DialogBody, DialogSurface, DialogTitle, DialogTrigger, Button, DialogContent, Combobox, Field, Switch, Option, Input, typographyStyles, tokens, makeResetStyles, makeStyles, InputProps, ComboboxProps } from "@fluentui/react-components";
 import { Dismiss24Regular } from '@fluentui/react-icons';
 import { DatePicker } from "@fluentui/react-datepicker-compat";
+import { IReceitas } from "../../../interfaces/IReceitas";
 
 
 const useStackClassName = makeResetStyles({
@@ -76,6 +77,18 @@ const EditReceita: React.FunctionComponent<IEditReceitasProps> = (props) => {
         }
     },[props.openDialog])
 
+
+    function close(){
+        setOpen(false)
+        const receita:IReceitas ={
+            Title:nomeReceita,
+            TipoReceita:selectedTipoReceita[0] ? selectedTipoReceita[0] :"",
+            Cara:receitaCara,
+            DataTentativaString: dataReceita.toDateString(),
+            Anexo:props.item.Anexo
+        }
+        props.closeDialog(false, receita)
+    }
     return(
         <Dialog modalType="alert" open={open} onOpenChange={() => close()}>
             <DialogSurface>
@@ -94,7 +107,7 @@ const EditReceita: React.FunctionComponent<IEditReceitasProps> = (props) => {
                 <Input style={{minWidth:100}} value={nomeReceita} onChange={onChangeNomeReceita}/>
             </Field>
             <Field label = "Tipo de Receita" required >
-                <Combobox onOptionSelect={onSelectedTipoReceita} style={{minWidth:100}}>
+                <Combobox onOptionSelect={onSelectedTipoReceita} style={{minWidth:100}} defaultValue={selectedTipoReceita[0]}>
                     <Option text="Entrada" value="Entrada">Entrada</Option>
                     <Option text="Principal" value="Principal">Principal</Option>
                     <Option text="Bebida" value="Bebida">Bebida</Option>

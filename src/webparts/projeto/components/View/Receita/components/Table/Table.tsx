@@ -143,6 +143,9 @@ const Table:React.FunctionComponent <ITableProps> = (props) => {
       setEditOpen(true)
     }
   
+    function closeEditReceita(open:boolean,item:IReceitas){
+      setEditOpen(open)
+    }
     return (
       <React.Fragment>
       <DataGrid
@@ -185,7 +188,9 @@ const Table:React.FunctionComponent <ITableProps> = (props) => {
           )}
         </DataGridBody>
       </DataGrid>
-      <EditReceita receitaList={props.receitaList} openDialog={editOpen} item={editItem!} closeDialog={() => {}}/>
+      <EditReceita receitaList={props.receitaList} openDialog={editOpen} item={editItem!} closeDialog={(
+        open:boolean,editItem:IReceitas
+      ) => {closeEditReceita(open,editItem)}}/>
       </React.Fragment>
     );
   };
