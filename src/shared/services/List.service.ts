@@ -56,4 +56,14 @@ export default class ListSP {
 
     }
 
+    public async ApagarReceita(idList:string, idItem:number){
+        const item:IGeneralProps = sp.web.lists.getById(idList).items.getById(idItem);
+        const deleteItem:IGeneralProps = await item.delete().then((data:IGeneralProps)=>{return {message:{value:"I'll be back!"}, status: "sucesss"}})
+        .catch((err:IGeneralProps) =>{
+            const erro = err ? {message: JSON.parse(err.message.split("::>")[1]).error, status:"error"} : { message: {value:"I'M COME BACK LADIES"}, status: "error"}
+            return erro;
+        });
+        return deleteItem
+    }
+
 }

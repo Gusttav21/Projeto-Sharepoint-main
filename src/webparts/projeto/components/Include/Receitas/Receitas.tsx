@@ -41,11 +41,11 @@ const IncludeReceitas: React.FunctionComponent<IReceitaProps> = (props) =>{
         console.log(selectedTipoReceita)
       };
 
-    const [receitaCara, setReceitaCara] = React.useState(false);
-    const onChangeReceitaCara = React.useCallback(
+    const [caraReceita, setCaraReceita] = React.useState(false);
+    const onChangecaraReceita = React.useCallback(
         (ev) => {
-            setReceitaCara(ev.currentTarget.checked);
-        },[setReceitaCara]
+            setCaraReceita(ev.currentTarget.checked);
+        },[setCaraReceita]
       );
 
     const [dataReceita,setDataReceita] = React.useState<Date>(new Date())
@@ -81,7 +81,7 @@ const IncludeReceitas: React.FunctionComponent<IReceitaProps> = (props) =>{
 
                 Title: nomeReceita,
                 TipoReceita: selectedTipoReceita[0] ? selectedTipoReceita[0] : "",
-                Cara: receitaCara,
+                Cara: caraReceita,
                 DataTentativa: dataReceita
 
             };
@@ -155,11 +155,11 @@ const IncludeReceitas: React.FunctionComponent<IReceitaProps> = (props) =>{
         <div className={useStackClassName()}>
             <Field label="A Receita é Cara?" style={{ userSelect: 'none'}}>
             <Switch
-                checked={receitaCara}
-                onChange={onChangeReceitaCara}
-                label={receitaCara ? "Sim" : "Não"}/>
+                checked={caraReceita}
+                onChange={onChangecaraReceita}
+                label={caraReceita ? "Sim" : "Não"}/>
                 <span className={styles.description}>
-                    {receitaCara ? "IMPAGAVÉÉÉL": "Ok"}
+                    {caraReceita ? "IMPAGAVÉÉÉL": "Ok"}
                 </span>
             </Field>
         </div>

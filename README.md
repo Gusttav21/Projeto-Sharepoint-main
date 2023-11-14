@@ -53,19 +53,53 @@ Short summary on functionality and used technologies.
 
 > Include any additional steps as needed.
 
-## Features
+## Anotações 
 
-Description of the extension that expands upon high-level summary above.
+Habilitar execução de scripts no windows (Executar no PowerShell):
+Set-ExecutionPolicy AllSigned 
+Instalar Gulp e Yeoman: 
+npm install gulp-cli yo @microsoft/generator-sharepoint --global
+Instalar certificado de desenvolvimento do gulp: 
+gulp trust-dev-cert
 
-This extension illustrates the following concepts:
+Iniciar Projeto (Necessário instalar tudo anteriormente):
+yo @microsoft/sharepoint
+Iniciar servidor gulp:
+gulp serve 
 
-- topic 1
-- topic 2
-- topic 3
+Instalar React e ReactDom:
+npm i react@17.0.1 react-dom@17.0.1 @types/react@17.0.45 @types/react-dom@17.0.17 --save-exact
+Instalar componentes de temas:
+npm install @fluentui/react-components
+Instalar o DatePicker
+npm install @fluentui/react-datepicker-compat
+Instalar o pnp
+npm install @pnp/pnpjs@2.11.0
+Criar temas personalizados:
+https://react.fluentui.dev/?path=/docs/themedesigner--page
+Documentação com componentes, temas e ícones:
+https://react.fluentui.dev/?
 
-> Notice that better pictures and documentation will increase the sample usage and the value you are providing for others. Thanks for your submissions advance.
+Bug 22/08/2023
+Colocar a Exclamação em todos os lugares onde estiver chamando algum tipo nulo com "?"
+Verificar o 
+    React.useEffect(() =>{
+        getReceitas().then(result =>{
+            setReceitas(result)
+        })
+    }, [])
+ em Receitas.tsx
 
-> Share your web part with others through Microsoft 365 Patterns and Practices program to get visibility and exposure. More details on the community, open-source projects and other activities from http://aka.ms/m365pnp.
+Bug Colossal do dia 05/09/2023
+* Remover Pasta Node-modules
+npm install
+npm install @types/webpack-env --save-dev
+correr pro abraço.
+
+
+Tarefas de acompanhamento
+
+
 
 ## References
 

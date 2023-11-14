@@ -17,13 +17,25 @@ import * as React from 'react';
 import { IReceitas } from '../../../../../interfaces/IReceitas';
 import { stringIsNullOrEmpty } from '@pnp/pnpjs';
 import { ITableProps } from './ITableProps';
-import { ArrowDownload24Regular, Edit24Regular } from '@fluentui/react-icons';
+import { ArrowDownload24Regular, Edit24Regular, Delete24Regular } from '@fluentui/react-icons';
 import EditReceita from '../../../../Update/EditReceita/EditReceita';
+import ListSP from '../../../../../../../shared/services/List.service';
 
 const Table:React.FunctionComponent <ITableProps> = (props) => {
 
+    const spList = new ListSP();
+    const [allItems, setAllItems] = React.useState<IReceitas[]>([])
+    const [items, setItems] = React.useState<IReceitas[]>([])
     const [editItem, setEditItem] = React.useState<IReceitas>()
     const [editOpen, setEditOpen] = React.useState(false)
+
+    React.useEffect(()=>{
+      if(props.item.length>0){
+        setItems(props.item)
+        setAllItems(props.item)
+      }
+    }, [props.item])
+
     const columns: TableColumnDefinition<IReceitas>[] = [
         createTableColumn<IReceitas>({
           columnId: "Title",
@@ -95,6 +107,8 @@ const Table:React.FunctionComponent <ITableProps> = (props) => {
               return "Ações"
             },
             renderCell:(item) =>{
+            
+
               return(
                 <React.Fragment>
                   {item.Anexo.length > 0 && 
@@ -103,6 +117,8 @@ const Table:React.FunctionComponent <ITableProps> = (props) => {
                 }
                 <Button aria-label = "Editar Receita" icon={<Edit24Regular/>}
                       onClick={()=>{editarReceita(item)}}/>
+                <Button aria-label = "Editar Receita" icon={<Delete24Regular/>}
+                      onClick={()=>{apagarReceita(item)}}/>
                 </React.Fragment>
               )
             }
@@ -142,14 +158,46 @@ const Table:React.FunctionComponent <ITableProps> = (props) => {
       setEditItem(item)
       setEditOpen(true)
     }
+
+    async function apagarReceita(item: IReceitas) {
+      var confirmDelete = confirm("VOCÊ VAI ME APAGAR MEMO IRMÃO??")
+      if(confirmDelete){
+        await spList.ApagarReceita(props.receitaList,item.ID!).then((result:any)=>{
+          if(result.status == "success"){
+            let itemsTodos = allItems;
+            let index = itemsTodos.map((x:IReceitas) => {return x.ID}).indexOf(item.ID)
+            itemsTodos.splice(index, 1)
+            setAllItems(itemsTodos)
+            setItems(itemsTodos)
+          }
+          alert(result.message.value)
+        })
+      }
+    }
+ 
   
     function closeEditReceita(open:boolean,item:IReceitas){
       setEditOpen(open)
+      atualizaListaReceita(editItem!, item)
     }
+
+    function atualizaListaReceita( editItem:IReceitas, item:IReceitas){
+      let receitas:IReceitas[] = items;
+      let index = items.map((x:IReceitas)=>{return x.ID}).indexOf(editItem.ID)
+
+      receitas[index].Title = item.Title;
+      receitas[index].DataTentativaString = item.DataTentativaString
+      receitas[index].TipoReceita = item.TipoReceita
+      receitas[index].Cara = item.Cara;
+      receitas[index].Anexo = item.Anexo ? item.Anexo : [];
+      setItems(receitas)
+    }
+
     return (
       <React.Fragment>
       <DataGrid
-        items={props.item}
+      key={new Date().getTime()}
+        items={items}
             columns={columns}
             sortable
             sortState={sortState}

@@ -39,16 +39,16 @@ const EditReceita: React.FunctionComponent<IEditReceitasProps> = (props) => {
         console.log(selectedTipoReceita)
       };
 
-    const [receitaCara, setReceitaCara] = React.useState(false);
-    const onChangeReceitaCara = React.useCallback(
+    const [caraReceita, setCaraReceita] = React.useState(false);
+    const onChangecaraReceita = React.useCallback(
         (ev) => {
-            setReceitaCara(ev.currentTarget.checked);
-        },[setReceitaCara]
+            setCaraReceita(ev.currentTarget.checked);
+        },[setCaraReceita]
       );
 
     const [dataReceita,setDataReceita] = React.useState<Date>(new Date())
 
-    const [fileReceita, setFileReceita] = React.useState<{name:any; content:string | ArrayBuffer | null;}>();
+    const [fileReceita, setFileReceita] = React.useState<{name:any; content:string | ArrayBuffer | null;}| null>();
     function addFile(event:any){
         let resultFile = event.target.files;
         for(let i = 0; i < resultFile.length; i++){
@@ -70,13 +70,17 @@ const EditReceita: React.FunctionComponent<IEditReceitasProps> = (props) => {
     
     const [open,setOpen] = React.useState(false);
     const [trocaAnexo,setTrocaAnexo] = React.useState(false);
+    const [urlArquivo, setUrlArquivo] = React.useState('');
+    const [nomeArquivo, setNomeArquivo] = React.useState('');
 
     React.useEffect(()=>{
         setOpen(props.openDialog);
+        setTrocaAnexo(false);
+        setFileReceita(null);
         if(props.item && props.openDialog){
             setNomeReceita(props.item.Title);
             setSelectedTipoReceita([props.item.TipoReceita!]);
-            setReceitaCara(props.item.Cara!);
+            setCaraReceita(props.item.Cara!);
             setDataReceita(new Date(props.item.DataTentativaString!))
         }
     },[props.openDialog])
@@ -87,9 +91,9 @@ const EditReceita: React.FunctionComponent<IEditReceitasProps> = (props) => {
         const receita:IReceitas ={
             Title:nomeReceita,
             TipoReceita:selectedTipoReceita[0] ? selectedTipoReceita[0] :"",
-            Cara:receitaCara,
+            Cara:caraReceita,
             DataTentativaString: dataReceita.toDateString(),
-            Anexo:props.item.Anexo
+            Anexo: fileReceita ? [{ServerRelativeUrl:urlArquivo,FileName:nomeArquivo}] : props.item.Anexo
         }
         props.closeDialog(false, receita)
     }
@@ -101,37 +105,49 @@ const EditReceita: React.FunctionComponent<IEditReceitasProps> = (props) => {
         }
     }
 
+    React.useEffect(() => {
+        if(nomeArquivo && urlArquivo)
+            close()
+    }, [nomeArquivo, urlArquivo])
+
     async function editarReceita(){
         if(verificaCampos()){
             const receita:IReceitas = {
                 Title:nomeReceita,
                 TipoReceita:selectedTipoReceita[0]? selectedTipoReceita[0]:"",
-                Cara:receitaCara,
+                Cara:caraReceita,
                 DataTentativa:dataReceita
             }
-            await spList.EditList(props.receitaList, props.item.ID!, receita).then((result:any)=>{
+            await spList.EditList(props.receitaList, props.item.ID!, receita).then(async(result:any)=>{
                 if(fileReceita && fileReceita.name){
                     if(trocaAnexo){
-                        spList.DeleteAttachmentList(props.receitaList,props.item.ID!,props.item.Anexo).then((result:any)=>{
-                            spList.PostAttachmentList(props.receitaList, props.item.ID!, fileReceita).then((result:any)=>{
+                        await spList.DeleteAttachmentList(props.receitaList,props.item.ID!,props.item.Anexo).then(async (result:any)=>{
+                            await spList.PostAttachmentList(props.receitaList, props.item.ID!, fileReceita).then((result:any)=>{
                                 if(result.status && result.status !== 200){
                                     alert('Erro durante a mudança de anexos.')
                                 }else{
+                                    setUrlArquivo(result.data.ServerRelativeUrl)
+                                    setNomeArquivo(result.data.FileName)
                                     alert('Item atualizado com sucesso.')
+
                                 }
                             })
                         })
                     }else{
-                        spList.PostAttachmentList(props.receitaList, props.item.ID!, fileReceita).then((result:any)=>{
+                        spList.PostAttachmentList(props.receitaList, props.item.ID!, fileReceita)
+                        .then((result:any) => {
                             if(result.status && result.status !== 200){
-                                alert('Erro durante a inserção de anexos.')
+                                alert('Erro durante a inserção do anexos.')
                             }else{
+                                setUrlArquivo(result.data.ServerRelativeUrl)
+                                setNomeArquivo(result.data.FileName)
                                 alert('Item atualizado com sucesso.')
                             }
                         })
                     }
                 }else{
                     alert('Item Atualizado com sucesso')
+                    close()
                 }
             }).catch((err:any)=>{
                 alert(err)
@@ -175,11 +191,11 @@ const EditReceita: React.FunctionComponent<IEditReceitasProps> = (props) => {
         <div className={useStackClassName()}>
             <Field label="A Receita é Cara?" style={{ userSelect: 'none'}}>
             <Switch
-                checked={receitaCara}
-                onChange={onChangeReceitaCara}
-                label={receitaCara ? "Sim" : "Não"}/>
+                checked={caraReceita}
+                onChange={onChangecaraReceita}
+                label={caraReceita ? "Sim" : "Não"}/>
                 <span className={styles.description}>
-                    {receitaCara ? "IMPAGAVÉÉÉL": "Ok"}
+                    {caraReceita ? "IMPAGAVÉÉÉL": "Ok"}
                 </span>
             </Field>
         </div>
@@ -209,9 +225,7 @@ const EditReceita: React.FunctionComponent<IEditReceitasProps> = (props) => {
             </div>
                 </DialogContent>
                 <DialogActions>
-                    <DialogTrigger disableButtonEnhancement>
                         <Button appearance="primary" onClick={editarReceita}>Atualizar</Button>
-                    </DialogTrigger>
                 </DialogActions>
                 </DialogBody>
             </DialogSurface>
